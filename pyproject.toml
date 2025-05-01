@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "mooseherder"
-version = "0.1.0"
+version = "2025.5.0"
 description = "A herder for calling MOOSE and gmsh to run parallel parametric sweeps of simulations."
 authors = [
   { name = "thescepticalrabbit", email = "thescepticalrabbit@gmail.com" },
@@ -20,7 +20,7 @@ classifiers = [
 ]
 requires-python = ">=3.11"
 dependencies = [
-  "numpy>=2.0.0",
+  "numpy<2.0.0",
   "netCDF4>=1.6.5"
 ]
 
