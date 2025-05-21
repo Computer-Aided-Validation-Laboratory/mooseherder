@@ -17,8 +17,15 @@ from mooseherder.simdata import SimData, SimReadConfig
 
 
 class SweepReader:
-    """ Used to read the output from one or more calls to mooseherd.run_para().
+    """Used to read the output from one or more calls to mooseherd.run_para().
     has configurable options for reading in the variable sweep in parallel.
+
+    Parameters
+    ----------
+
+    Returns
+    -------
+
     """
     def __init__(self,
                  dir_manager: DirectoryManager,
@@ -42,15 +49,21 @@ class SweepReader:
         the variable sweep. The output key file maps which simulation were run
         in a given sub directory.
 
-        Args:
-            sweep_iter (int): sweep iteration to read. This is the number that
-                is appended to the output key file e.g. output-key-2.json for
-                the 2nd call to run_seq/para in the mooseherd.
+        Parameters
+        ----------
+        sweep_iter : int
+            sweep iteration to read. This is the number that
+            is appended to the output key file e.g. output-key-2.json for
+            the 2nd call to run_seq/para in the mooseherd.
 
-        Returns:
-            list[list[Path]]: paths to the outputs from the variable sweep the
-                outer list is the simulation iteration and the inner list is
-                the position in the simulation chain.
+
+        Returns
+        -------
+        list[list[Path]]
+            paths to the outputs from the variable sweep the
+            outer list is the simulation iteration and the inner list is
+            the position in the simulation chain.
+
         """
         output_key = self._dir_manager.get_output_key_file(sweep_iter)
         if not output_key.is_file():
@@ -66,14 +79,22 @@ class SweepReader:
         """read_all_output_keys: as read_output_keys() but finds all output key
         files in the first sub-directory and reads them.
 
-        Raises:
-            FileNotFoundError: No output key files found in the first sub-
-                directory.
+        Parameters
+        ----------
 
-        Returns:
-            list[list[Path]]: paths to the outputs from the variable sweep the
-                outer list is the simulation iteration and the inner list is
-                the position in the simulation chain.
+        Returns
+        -------
+        list[list[Path]]
+            paths to the outputs from the variable sweep the
+            outer list is the simulation iteration and the inner list is
+            the position in the simulation chain.
+
+        Raises
+        ------
+        FileNotFoundError
+            No output key files found in the first sub-
+            directory.
+
         """
         output_paths = self._find_files_by_str(self._dir_manager.get_output_key_tag(),
                                                self._dir_manager.get_run_dir(0))
@@ -95,16 +116,23 @@ class SweepReader:
         """read_sweep_var_file: reads the file containing the sweep variable
         dictionary for a given sweep iteration and returns it.
 
-        Args:
-            sweep_iter (int, optional): The sweep iteration (i.e. the call
-                number to mooseher.run_seq/para) Defaults to 1.
+        Parameters
+        ----------
+        sweep_iter : int
+            The sweep iteration (i.e. the call
+            number to mooseher.run_seq/para) Defaults to 1.
 
-        Raises:
-            FileNotFoundError: Sweep file not found.
+        Returns
+        -------
+        list[list[dict | None]]
+            The sweep variables as passed to mooseherd
+            .run_seq/para.
 
-        Returns:
-            list[list[dict | None]]: The sweep variables as passed to mooseherd
-                .run_seq/para.
+        Raises
+        ------
+        FileNotFoundError
+            Sweep file not found.
+
         """
         sweep_var_file = self._dir_manager.get_sweep_var_file(sweep_iter)
         if not sweep_var_file.is_file():
@@ -122,13 +150,21 @@ class SweepReader:
         """read_all_sweep_var_files: as read sweep variables but finds all
         sweep variables in the first sub-directory and reads them.
 
-        Raises:
-            FileNotFoundError: No sweep variable files found.
+        Parameters
+        ----------
 
-        Returns:
-            list[list[dict | None]]: The sweep variables as passed to mooseherd
-                .run_seq/para. Additional sweep iterations are appended to the
-                end of the list.
+        Returns
+        -------
+        list[list[dict | None]]
+            The sweep variables as passed to mooseherd
+            .run_seq/para. Additional sweep iterations are appended to the
+            end of the list.
+
+        Raises
+        ------
+        FileNotFoundError
+            No sweep variable files found.
+
         """
         sweep_var_paths = self._find_files_by_str(self._dir_manager.get_sweep_var_tag(),
                                                   self._dir_manager.get_run_dir(0))
@@ -148,13 +184,20 @@ class SweepReader:
         """_find_files_by_str: helper function for finding output key and sweep
         variable files based on a specific string.
 
-        Args:
-            search_str (str): the string to find in the file name.
-            search_path (Path): the path to the directory to search for files
-                containing the specified string.
+        Parameters
+        ----------
+        search_str : str
+            the string to find in the file name.
+        search_path : Path
+            the path to the directory to search for files
+            containing the specified string.
 
-        Returns:
-            list[Path]: list of paths to the files found with the string.
+
+        Returns
+        -------
+        list[Path]
+            list of paths to the files found with the string.
+
         """
         found_files = list([])
 
@@ -172,9 +215,15 @@ class SweepReader:
     def get_output_files(self) -> list[list[Path | None]]:
         """get_output_files
 
-        Returns:
-            list[list[Path]]: returns the paths to the output files as read
-                from the output key files.
+        Parameters
+        ----------
+
+        Returns
+        -------
+        list[list[Path]]
+            returns the paths to the output files as read
+            from the output key files.
+
         """
         return self._output_files
 
@@ -187,14 +236,20 @@ class SweepReader:
         path based on the specified read configuration. If the read
         configuration is None then read everything.
 
-        Args:
-            output_file (Path): Path to the file to read
-            read_config (SimReadConfig | None): class to specify the data to read
+        Parameters
+        ----------
+        output_file : list[Path | None] :
+            Path to the file to read
+        read_config : SimReadConfig | None
+            class to specify the data to read
 
-        Returns:
-            list[SimData | None]: list of data classes holding the simulation
-                data for each simulation in the chain. Will be None for a pre-
-                processor like Gmsh that has not output.
+        Returns
+        -------
+        list[SimData | None]
+            list of data classes holding the simulation
+            data for each simulation in the chain. Will be None for a pre-
+            processor like Gmsh that has not output.
+
         """
         data_list = list([])
 
@@ -220,17 +275,23 @@ class SweepReader:
         sequentially. Can read a specific iteration with a specific read config
         but defaults to reading everything found in the simulation directories.
 
-        Args:
-            sweep_iter (int | None, optional): sweep iteration number to read.
-                Reads the output key file for this iteration. Defaults to None.
-            read_config (SimReadConfig | None, optional): object for specifying
-                which variables are to be extracted from the output. Defaults
-                to None.
+        Parameters
+        ----------
+        sweep_iter : int | None
+            sweep iteration number to read.
+            Reads the output key file for this iteration. Defaults to None.
+        read_config : SimReadConfig | None
+            object for specifying
+            which variables are to be extracted from the output. Defaults
+            to None.
 
-        Returns:
-            list[list[SimData]]: list of lists of SimData objects containing the
-                simulation results corresponding to each combination of
-                variables.
+        Returns
+        -------
+        list[list[SimData]]
+            list of lists of SimData objects containing the
+            simulation results corresponding to each combination of
+            variables.
+
         """
         self._start_read_output_keys(sweep_iter)
 
@@ -249,17 +310,23 @@ class SweepReader:
         Can read a specific iteration with a specific read config but defaults
         to reading everything found in the simulation directories.
 
-        Args:
-            sweep_iter (int | None, optional): sweep iteration number to read.
-                Reads the output key file for this iteration. Defaults to None.
-            read_config (SimReadConfig | None, optional): object for specifying
-                which variables are to be extracted from the output. Defaults
-                to None.
+        Parameters
+        ----------
+        sweep_iter : int | None
+            sweep iteration number to read.
+            Reads the output key file for this iteration. Defaults to None.
+        read_config : SimReadConfig | None
+            object for specifying
+            which variables are to be extracted from the output. Defaults
+            to None.
 
-        Returns:
-            list[list[SimData]]: list of lists of SimData objects containing the
-                simulation results corresponding to each combination of
-                variables.
+        Returns
+        -------
+        list[list[SimData]]
+            list of lists of SimData objects containing the
+            simulation results corresponding to each combination of
+            variables.
+
         """
         self._start_read_output_keys(sweep_iter)
 
@@ -278,9 +345,15 @@ class SweepReader:
         """_start_read: helper function to read the output keys for a specific
         simulation iteration prior to reading the simulation outputs.
 
-        Args:
-            sweep_iter (int | None): sweep iteration number to read. If None
-                read all of the output keys.
+        Parameters
+        ----------
+        sweep_iter : int | None
+            sweep iteration number to read. If None
+            read all of the output keys.
+
+        Returns
+        -------
+
         """
         if self._output_files == '':
             self._output_files = self.read_output_key(sweep_iter=1)

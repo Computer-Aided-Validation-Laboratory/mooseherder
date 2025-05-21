@@ -12,11 +12,18 @@ from pathlib import Path
 
 
 class MooseConfig:
-    """ Moose configuration class that handles 1) the path to the main moose
+    """Moose configuration class that handles 1) the path to the main moose
     build, 2) the path to the moose app, and 3) the name of the app to be used
     to construct the command string. These are stored as a dictionary keyed
     with 'main_path', 'app_path' and 'app_name'. This class can also write and
     read json files containing the moose config.
+
+    Parameters
+    ----------
+
+    Returns
+    -------
+
     """
     def __init__(self, config: dict[str,Path | str] | None = None) -> None:
 
@@ -32,8 +39,14 @@ class MooseConfig:
         """get_config: returns the config dictionary after checking it is
         valid.
 
-        Returns:
-            dict[str, Path | str]: dictionary containing the moose config.
+        Parameters
+        ----------
+
+        Returns
+        -------
+        dict[str, Path | str]
+            dictionary containing the moose config.
+
         """
         self._check_config_valid(self._config)
         return self._config # type: ignore
@@ -45,15 +58,25 @@ class MooseConfig:
         """_check_config_valid: helper function to check if the moose config
         is valid.
 
-        Args:
-            config (dict[str,Path  |  str] | None, optional): dictionary
-                containing the moose config. Defaults to None.
+        Parameters
+        ----------
+        config : dict[str, Path | str] | None = None
+            Dictionary containing the moose config. Defaults to None.
 
-        Raises:
-            MooseConfigError: Dicitionary not initialised.
-            MooseConfigError: Dicitionary does not contain the required keys.
-            MooseConfigError: Path to MOOSE does not exist.
-            MooseConfigError: Path to MOOSE app does not exist.
+        Returns
+        -------
+
+        Raises
+        ------
+        MooseConfigError
+            Dicitionary not initialised.
+        MooseConfigError
+            Dicitionary does not contain the required keys.
+        MooseConfigError
+            Path to MOOSE does not exist.
+        MooseConfigError
+            Path to MOOSE app does not exist.
+
         """
         if config is None:
             raise MooseConfigError(
@@ -78,11 +101,16 @@ class MooseConfig:
         """convert_path_to_str: converts all paths in the config dictionary to
         strings so that it can be saved to json.
 
-        Args:
-            in_config (dict[str,Path  |  str] | None):
+        Parameters
+        ----------
+        in_config : dict[str, Path | str] | None
+            Dictionary containing the moose config. Defaults to None.
 
-        Returns:
-            dict[str,str] | None: as input with Paths converted to strings.
+        Returns
+        -------
+        dict[str,str] | None
+            as input with Paths converted to strings.
+
         """
         if in_config is None:
             return None
@@ -99,13 +127,17 @@ class MooseConfig:
         """convert_str_to_path: helper function to convert string to Path for
         readin in json dictionary. Does not check if the paths exist.
 
-        Args:
-            in_config (dict[str,str] | None, optional): input config dictionary
-                with string instead of Path. Defaults to None.
+        Parameters
+        ----------
+        in_config : dict[str, Path | str] | None
+            Dictionary containing the moose config. Defaults to None.
 
-        Returns:
-            dict[str, Path | str] | None: as in_config but strings to main_path
-                and app_path are converted to Path.
+        Returns
+        -------
+        dict[str, Path | str] | None
+            as in_config but strings to main_path
+            and app_path are converted to Path.
+
         """
         if in_config is None:
             return None
@@ -124,12 +156,20 @@ class MooseConfig:
         """save_config: saves the moose config dictionary as a json file in the
         specified path.
 
-        Args:
-            config_path (Path): path and file name with extension .json to save
-                the moose config dictionary.
+        Parameters
+        ----------
+        config_path : Path
+            path and file name with extension .json to save the moose config
+            dictionary.
 
-        Raises:
-            MooseConfigError: Parent path to save config file does not exist.
+        Returns
+        -------
+
+        Raises
+        ------
+        MooseConfigError
+            Parent path to save config file does not exist.
+
         """
         if not config_path.parent.is_dir():
             raise MooseConfigError('Parent path to save config file does not exist.')
@@ -144,16 +184,22 @@ class MooseConfig:
         specified path. Checks if the configuration is valid and raises a
         MooseConfigError if it is not.
 
-        Args:
-            config_path (Path): path to the json config file containing the
-            configuration dictionary.
+        Parameters
+        ----------
+        config_path : Path
+            path to the json config file containing the
 
-        Raises:
-            MooseConfigError: MOOSE config file does not exist.
+        Returns
+        -------
+        Self
+            returns a MooseConfig object allowing the config to be
+            initialised by directly loading a json config file.
 
-        Returns:
-            Self: returns a MooseConfig object allowing the config to be
-                initialised by directly loading a json config file.
+        Raises
+        ------
+        MooseConfigError
+            MOOSE config file does not exist.
+
         """
         if not config_path.is_file():
             raise MooseConfigError(
@@ -172,4 +218,11 @@ class MooseConfig:
 class MooseConfigError(Exception):
     """MooseConfigError: custom error class for flagging errors with the moose
     configuration.
+
+    Parameters
+    ----------
+
+    Returns
+    -------
+
     """

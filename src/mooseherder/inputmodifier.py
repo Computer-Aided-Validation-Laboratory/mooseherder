@@ -10,10 +10,10 @@ from pathlib import Path
 
 class InputModifier:
     """Class to modify variables in generic text-based input files.
-    
+
     Once variables have been modified by the user by passing in a dictionary of
     new variables the input can be written to file.
-    
+
     Variable definition blocks should begin #comment character#* and end
     #comment character#**, e.g. //_* and //** for gmsh or #_* and #** for
     moose.
@@ -66,7 +66,7 @@ class InputModifier:
         self.find_vars()
         self.read_vars()
 
-    def _extract_var_str(self, var_line: str) -> tuple[str, str | float | int, str]:
+    def _extract_var_str(self, var_line: str) -> tuple[str, str | float, str]:
         """Helper function to split a string from the input file variable block
         into the variable key, the variable value and any remaining comment.
 
@@ -74,12 +74,10 @@ class InputModifier:
         ----------
         var_line : str
             line from the input file to process
-        var_line: str :
-            
 
         Returns
         -------
-        [str,str/float,str]
+        [str,str | float,str]
             returns a three element list. The first element
             is the variable key, the second is the variable value as a float
             or string, the third is any comment string remaining.
@@ -152,7 +150,7 @@ class InputModifier:
             extracted from the input file. Only the variables to be edited
             need to be present.
         new_vars: dict :
-            
+
 
         Returns
         -------
@@ -176,7 +174,7 @@ class InputModifier:
         input_write_file : str
             Path to where the file should be written.
         input_write_file: Path :
-            
+
 
         Returns
         -------

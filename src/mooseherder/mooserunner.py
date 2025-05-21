@@ -12,8 +12,7 @@ from mooseherder.simrunner import SimRunner
 from mooseherder.mooseconfig import MooseConfig
 
 class MooseRunner(SimRunner):
-    """Used to run MOOSE models (*.i) from python.
-    """
+    """Used to run MOOSE models (*.i) from python."""
     def __init__(self, config: MooseConfig):
         """__init__: Constructor for MOOSE runner taking a MooseConfig object
         that contains the paths to the main MOOSE install, the MOOSE app and
@@ -34,8 +33,7 @@ class MooseRunner(SimRunner):
 
 
     def set_env_vars(self) -> None:
-        """Sets environment variables for calling MOOSE with MPI.
-        """
+        """Sets environment variables for calling MOOSE with MPI."""
         os.environ['CC'] = 'mpicc'
         os.environ['CXX'] = 'mpicxx'
         os.environ['F90'] = 'mpif90'
@@ -48,8 +46,15 @@ class MooseRunner(SimRunner):
     def set_threads(self, n_threads: int) -> None:
         """Sets the number of threads asked of MOOSE on the command line.
 
-        Args:
-            n_threads (int): Number of threads.
+        Parameters
+        ----------
+        n_threads : int
+            Number of threads.
+
+
+        Returns
+        -------
+
         """
         # Need to make sure number is sensible based on cpu
         if n_threads <= 0:
@@ -64,8 +69,14 @@ class MooseRunner(SimRunner):
     def set_tasks(self, n_tasks: int) -> None:
         """Sets the number of MPI tasks asked of MOOSE on the command line.
 
-        Args:
-            n_tasks (int): Number of mpi tasks.
+        Parameters
+        ----------
+        n_tasks : int
+            Number of mpi tasks.
+
+        Returns
+        -------
+
         """
         # Need to make sure is sensible based on cpu
         if n_tasks <= 0:
@@ -80,9 +91,15 @@ class MooseRunner(SimRunner):
     def set_stdout(self, redirect_flag: bool = True) -> None:
         """Sets MOOSE to redirect output (True) to file instead of console (False).
 
-        Args:
-            redirect_flag (bool, optional): True = output to stdout file, False
-                 = output to console. Defaults to True.
+        Parameters
+        ----------
+        redirect_flag : bool
+            True = output to stdout file, False
+            = output to console. Defaults to True.
+
+        Returns
+        -------
+
         """
         self._redirect_stdout = redirect_flag
 
@@ -91,13 +108,21 @@ class MooseRunner(SimRunner):
                     redirect_out: bool = True) -> None:
         """Sets all options for MOOSE run parallelisation and output.
 
-        Args:
-            n_tasks (int, optional): Number of mpi tasks for MOOSE run.
-                Defaults to 1.
-            n_threads (int, optional): Number of threads for MOOSE run.
-                Defaults to 1.
-            redirect (bool, optional): Redirect MOOSE output from console to
-                file (True). Defaults to False.
+        Parameters
+        ----------
+        n_tasks : int
+            Number of mpi tasks for MOOSE run.
+            Defaults to 1.
+        n_threads : int
+            Number of threads for MOOSE run.
+            Defaults to 1.
+        redirect : bool
+            Redirect MOOSE output from console to
+            file (True). Defaults to False.
+
+        Returns
+        -------
+
         """
         self.set_threads(n_threads)
         self.set_tasks(n_tasks)
@@ -107,8 +132,14 @@ class MooseRunner(SimRunner):
     def get_input_file(self) -> Path | None:
         """get_input_file
 
-        Returns:
-            Path | None: full path to the input file or None if not specified.
+        Parameters
+        ----------
+
+        Returns
+        -------
+        Path | None
+            full path to the input file or None if not specified.
+
         """
         return self._input_path
 
@@ -116,11 +147,19 @@ class MooseRunner(SimRunner):
     def set_input_file(self, input_path: Path) -> None:
         """Sets the path to the MOOSE input file and checks it exists.
 
-        Args:
-            input_file (str): full path and name of *.i MOOSE input script.
+        Parameters
+        ----------
+        input_file : Path
+            full path and name of *.i MOOSE input script.
 
-        Raises:
-            FileNotFoundError: the MOOSE input script doesn't exist
+        Returns
+        -------
+
+        Raises
+        ------
+        FileNotFoundError
+            the MOOSE input script doesn't exist
+
         """
         if not input_path.is_file():
             raise FileNotFoundError("Input file does not exist.")
@@ -131,9 +170,15 @@ class MooseRunner(SimRunner):
     def get_input_dir(self) -> Path | None:
         """Gets the path to the directory for the specified input file.
 
-        Returns:
-            Path: path to input file directory, if no input file is specified
-                returns None.
+        Parameters
+        ----------
+
+        Returns
+        -------
+        Path
+            path to input file directory, if no input file is specified
+            returns None.
+
         """
         if self._input_path is None:
             return None
@@ -143,9 +188,15 @@ class MooseRunner(SimRunner):
     def get_input_tag(self) -> str:
         """Gets the input file name string without the path or the .i
 
-        Returns:
-            str: input file string, if no input file is specified returns an
-                empty string.
+        Parameters
+        ----------
+
+        Returns
+        -------
+        str
+            input file string, if no input file is specified returns an
+            empty string.
+
         """
         if self._input_path is None:
             return ""
@@ -157,9 +208,15 @@ class MooseRunner(SimRunner):
         """Gets the file and path for the output exodus file based
         on the specified input file. Includes '_out.e'.
 
-        Returns:
-            Path: output exodus file name with path, returns an empty None
-                if no input file is specified.
+        Parameters
+        ----------
+
+        Returns
+        -------
+        Path
+            output exodus file name with path, returns an empty None
+            if no input file is specified.
+
         """
         if self._input_path is None:
             return None
@@ -170,8 +227,14 @@ class MooseRunner(SimRunner):
     def get_arg_list(self) -> list[str]:
         """Run string getter.
 
-        Returns:
-            str: command line string to run MOOSE.
+        Parameters
+        ----------
+
+        Returns
+        -------
+        str
+            command line string to run MOOSE.
+
         """
         return self._arg_list
 
@@ -179,13 +242,18 @@ class MooseRunner(SimRunner):
         """Assmebles the command line string to run MOOSE based on current
         options.
 
-        Args:
-            input_file (str, optional): Full path to MOOSE input file, if not
-                empty updates the input file. Defaults to "".
+        Parameters
+        ----------
+        input_file : str
+            Full path to MOOSE input file, if not
+            empty updates the input file. Defaults to "".
 
-        Returns:
-            str: command line string that will be used by the runner when run
-                is called.
+        Returns
+        -------
+        str
+            command line string that will be used by the runner when run
+            is called.
+
         """
         if input_file is not None:
             self.set_input_file(input_file)
@@ -213,9 +281,15 @@ class MooseRunner(SimRunner):
         """Runs MOOSE based on current options by passing run string to
         subprocess shell.
 
-        Args:
-            input_file (Path, optional): Full path to MOOSE input file, if not
-                empty updates the input file. Defaults to None.
+        Parameters
+        ----------
+        input_file : Path
+            Full path to MOOSE input file, if not
+            empty updates the input file. Defaults to None.
+
+        Returns
+        -------
+
         """
         if input_file is not None:
             self.set_input_file(input_file)

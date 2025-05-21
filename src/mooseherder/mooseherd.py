@@ -19,10 +19,17 @@ from mooseherder.inputmodifier import InputModifier
 class MooseHerdError(Exception):
     """MooseHerdError: custom error class for flagging errors with the moose
     herd.
+
+    Parameters
+    ----------
+
+    Returns
+    -------
+
     """
 
 class MooseHerd:
-    """ MooseHerd class that can run parametric sweeps of simulation chains in
+    """MooseHerd class that can run parametric sweeps of simulation chains in
     parallel with configurable parallelisation options. Takes a list of
     SimRunner objects and a corresponding list of InputModifiers to insert the
     variables into the input scripts for the SimRunners. When calling run_* the
@@ -30,6 +37,13 @@ class MooseHerd:
     call run on all the SimRunners in order. Uses the DirectoryManager class to
     create/clear and log the directories in which each parallel worker is
     creating input files and running simulations.
+
+    Parameters
+    ----------
+
+    Returns
+    -------
+
     """
     def __init__(self, sim_runners: list[SimRunner],
                  input_mods: list[InputModifier],
@@ -71,13 +85,21 @@ class MooseHerd:
         is 'sim-i' so the first combination of variables in the simulation chain
         will be called 'sim-1-1'.
 
-        Args:
-            input_names (list[str] | None, optional): List of name prefixes to
-                be used for the simulation files. Defaults to None.
+        Parameters
+        ----------
+        input_names : list[str] | None
+            List of name prefixes to be used for the simulation files. Defaults
+            to None.
 
-        Raises:
-            MooseHerdError: The lengths of the sim runner list and the input
-                modifier lists are not the same.
+        Returns
+        -------
+
+        Raises
+        ------
+        MooseHerdError
+            The lengths of the sim runner list and the input
+            modifier lists are not the same.
+
         """
         if input_names is None:
             self._input_names = [f'sim-{ii+1}' for ii,_ in enumerate(self._runners)]
@@ -95,10 +117,16 @@ class MooseHerd:
         """set_keep_flag: flag used for allowing multiple calls to run_para or
         run_seq to keep everything or to overwrite with every call to run_*.
 
-        Args:
-            keep_all (bool, optional): True = keep all inputs and outputs with
-                multiple calls to run_*. False = overwrite inputs and outputs
-                with multiple calls to run_*. Defaults to True.
+        Parameters
+        ----------
+        keep_all : bool
+            True = keep all inputs and outputs with
+            multiple calls to run_*. False = overwrite inputs and outputs
+            with multiple calls to run_*. Defaults to True.
+
+        Returns
+        -------
+
         """
         self._keep_all = keep_all
 
@@ -107,8 +135,14 @@ class MooseHerd:
         """set_num_para_sims: sets the number of simulation chains to run in
         parallel. Limits the number
 
-        Args:
-            n_para (int, optional): _description_. Defaults to 1.
+        Parameters
+        ----------
+        n_para : int
+            Number of parallel simulation to run. Defaults to 1.
+
+        Returns
+        -------
+
         """
         n_para = int(n_para)
         n_cpus = os.cpu_count()
@@ -129,8 +163,14 @@ class MooseHerd:
         to the combination of variables being analysed. This number will
         accumulate with multiple calls to run_* is keep_all=true.
 
-        Returns:
-            int: current simulation iteration number.
+        Parameters
+        ----------
+
+        Returns
+        -------
+        int
+            current simulation iteration number.
+
         """
         return self._sim_iter
 
@@ -140,8 +180,14 @@ class MooseHerd:
         iteration is incremented with every call to run_* if keep_all = true.
         If keep_all = false then sweep_iter is held at 1.
 
-        Returns:
-            int: current sweep iteration number.
+        Parameters
+        ----------
+
+        Returns
+        -------
+        int
+            current sweep iteration number.
+
         """
         return self._sweep_iter
 
@@ -149,6 +195,13 @@ class MooseHerd:
     def reset_iter_counts(self) -> None:
         """reset_iter_counts: resets the simulation iteration and the sweep
         iteration counters to zero.
+
+        Parameters
+        ----------
+
+        Returns
+        -------
+
         """
         self._sim_iter = 0
         self._sweep_iter = 0
@@ -157,8 +210,14 @@ class MooseHerd:
     def _get_process_name(self) -> str:
         """_get_process_name: only here for monkey patching with pytest.
 
-        Returns:
-            str: the process name string.
+        Parameters
+        ----------
+
+        Returns
+        -------
+        str
+            the process name string.
+
         """
         return mp.current_process().name
 
@@ -167,9 +226,15 @@ class MooseHerd:
         """_get_worker_num: helper function to get the worker number for the
         current sub-process.
 
-        Returns:
-            str: number string taken from the process name. If this is the main
-                process returns '1'.
+        Parameters
+        ----------
+
+        Returns
+        -------
+        str
+            number string taken from the process name. If this is the main
+            process returns '1'.
+
         """
         name = self._get_process_name()
 
@@ -187,14 +252,20 @@ class MooseHerd:
     def _get_run_num(self, sim_iter: int, worker_num: str) -> str:
         """_get_run_num: helper function to get the run directory number string
 
-        Args:
-            sim_iter (int): the current simulation iteration.
-            worker_num (str): the worker number extracted from the current
+        Parameters
+        ----------
+        sim_iter : int
+            the current simulation iteration.
+        worker_num : str
+            the worker number extracted from the current
             process number as a string.
 
-        Returns:
-            str: the string specifying the run directory number for this
-                simulation iteration.
+        Returns
+        -------
+        str
+            the string specifying the run directory number for this
+            simulation iteration.
+
         """
         if self._keep_all:
             run_num = str(sim_iter+1)
@@ -211,13 +282,21 @@ class MooseHerd:
         """_mod_input: helper function that uses the input modifier to write
         new variables to the input file and save it to the specified path.
 
-        Args:
-            modifier (InputModifier): input modifier for the specified type of
-                input file.
-            mod_vars (dict | None): dictionary of variables to write to the
-                input file, if None just copy the input file.
-            save_file (Path): path with file name and extension to output the
-                modified input file.
+        Parameters
+        ----------
+        modifier : InputModifier
+            input modifier for the specified type of
+            input file.
+        mod_vars : dict | None
+            dictionary of variables to write to the
+            input file, if None just copy the input file.
+        save_file : Path
+            path with file name and extension to output the
+            modified input file.
+
+        Returns
+        -------
+
         """
         if mod_vars is not None:
             modifier.update_vars(mod_vars)
@@ -228,13 +307,20 @@ class MooseHerd:
         """_run: helper function to call the SimRunner and get the path to the
         output file.
 
-        Args:
-            runner (SimRunner): for running the simulation, must be a class
-                that implements the SimRunner ABC.
-            run_file (Path): path to the input file to run with SimRunner.
+        Parameters
+        ----------
+        runner : SimRunner
+            for running the simulation, must be a class
+            that implements the SimRunner ABC.
+        run_file : Path
+            path to the input file to run with SimRunner.
 
-        Returns:
-            Path | None: _description_
+
+        Returns
+        -------
+        Path | None
+            Path to the output or None
+
         """
         runner.run(run_file)
         return runner.get_output_path()
@@ -246,16 +332,22 @@ class MooseHerd:
         list once and returns a list of paths to the output files. Used by
         run_seq and run_para for parallelisation.
 
-        Args:
-            sim_iter (int): current simulation iteration which is the index of
-                the var_list from the var_sweep.
-            var_list (list[dict  |  None]): list of dictionaries that contain
-                the variables that will be run for this iteration.
+        Parameters
+        ----------
+        sim_iter : int
+            current simulation iteration which is the index of
+            the var_list from the var_sweep.
+        var_list : list[dict  |  None]
+            list of dictionaries that contain
+            the variables that will be run for this iteration.
 
-        Returns:
-            list[Path | None]: list of paths to the simulation output. If there
-                is no useful output from the runner in the simulation chain it
-                returns None in the list.
+        Returns
+        -------
+        list[Path | None]
+            list of paths to the simulation output. If there
+            is no useful output from the runner in the simulation chain it
+            returns None in the list.
+
         """
         iter_start_time = time.perf_counter()
 
@@ -283,11 +375,16 @@ class MooseHerd:
         in either run_seq or run_para. Sets the var_sweep attribute, deals with
         the management of directories and starts the performance counter.
 
-        Args:
-            var_sweep (list[list[dict  |  None]]): as passed to run_seq/para
+        Parameters
+        ----------
+        var_sweep : list[list[dict  |  None]]
+            as passed to run_seq/para.
 
-        Returns:
-            float: performance timer start value.
+        Returns
+        -------
+        float
+            performance timer start value.
+
         """
         self._var_sweep = var_sweep
 
@@ -306,11 +403,19 @@ class MooseHerd:
         writes the output key and sweep variables to the first workers
         directory.
 
-        Args:
-            start_sweep_time (float): the sweep start time taken from the
-                _start_sweep() function.
-            output_files (list[list[Path]]): list of list of paths to the
-                simulation chain output files.
+        Parameters
+        ----------
+        start_sweep_time : float
+            the sweep start time taken from the
+            _start_sweep() function.
+        output_files : list[list[Path]]
+            list of list of paths to the
+            simulation chain output files.
+
+
+        Returns
+        -------
+
         """
         self._sweep_run_time = time.perf_counter() - start_sweep_time
 
@@ -327,19 +432,25 @@ class MooseHerd:
         """run_sequential: runs the variable sweep given in var_sweep
         sequentially and returns the paths to the simulation outputs.
 
-        Args:
-            var_sweep (list[list[dict | None]]): outer list is the simulation
-                iteration, inner list is the position in the simulation chain
-                that the variable dictionary corresponds to. The dictionary
-                contains the variables that will be inserted into the input
-                file before calling run on the SimRunner. If None instead of
-                a dictionary then the input file is copied with no modification
+        Parameters
+        ----------
+        var_sweep : list[list[dict | None]]
+            outer list is the simulation
+            iteration, inner list is the position in the simulation chain
+            that the variable dictionary corresponds to. The dictionary
+            contains the variables that will be inserted into the input
+            file before calling run on the SimRunner. If None instead of
+            a dictionary then the input file is copied with no modification
 
-        Returns:
-            list[list[Path | None]]: outer list is the simulation iteration and
-                the inner list corresponds to the position of the SimRunner in
-                the cimulation chain. Gives the path to the simulation output
-                or None if no useful output is produced.
+
+        Returns
+        -------
+        list[list[Path | None]]
+            outer list is the simulation iteration and
+            the inner list corresponds to the position of the SimRunner in
+            the cimulation chain. Gives the path to the simulation output
+            or None if no useful output is produced.
+
         """
         start_sweep_time = self._start_sweep(var_sweep)
 
@@ -361,19 +472,25 @@ class MooseHerd:
         """run_para: runs the variable sweep with the simulation chain in
         parallel.
 
-        Args:
-            var_sweep (list[list[dict | None]]): outer list is the simulation
-                iteration, inner list is the position in the simulation chain
-                that the variable dictionary corresponds to. The dictionary
-                contains the variables that will be inserted into the input
-                file before calling run on the SimRunner. If None instead of
-                a dictionary then the input file is copied with no modification
+        Parameters
+        ----------
+        var_sweep : list[list[dict | None]]
+            outer list is the simulation
+            iteration, inner list is the position in the simulation chain
+            that the variable dictionary corresponds to. The dictionary
+            contains the variables that will be inserted into the input
+            file before calling run on the SimRunner. If None instead of
+            a dictionary then the input file is copied with no modification
 
-        Returns:
-            list[list[Path | None]]: outer list is the simulation iteration and
-                the inner list corresponds to the position of the SimRunner in
-                the cimulation chain. Gives the path to the simulation output
-                or None if no useful output is produced.
+
+        Returns
+        -------
+        list[list[Path | None]]
+            outer list is the simulation iteration and
+            the inner list corresponds to the position of the SimRunner in
+            the cimulation chain. Gives the path to the simulation output
+            or None if no useful output is produced.
+
         """
         sweep_start_time = self._start_sweep(var_sweep)
 
@@ -395,9 +512,15 @@ class MooseHerd:
     def get_sweep_time(self) -> float:
         """get_sweep_time
 
-        Returns:
-            float: the time taken for the variable sweep to run based on the
-                performance counter.
+        Parameters
+        ----------
+
+        Returns
+        -------
+        float
+            the time taken for the variable sweep to run based on the
+            performance counter.
+
         """
         return self._sweep_run_time
 
@@ -407,6 +530,13 @@ class MooseHerd:
 
         Returns
             float: the time taken for the current simulation iteration to run.
+
+        Parameters
+        ----------
+
+        Returns
+        -------
+
         """
         return self._iter_run_time
 
