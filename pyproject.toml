@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "mooseherder"
 version = "2025.5.0"
-description = "A herder for calling MOOSE and gmsh to run parallel parametric sweeps of simulations."
+description = "A herder for calling MOOSE and gmsh to run parallel parametric sweeps of multi-physics simulations."
 authors = [
   { name = "thescepticalrabbit", email = "thescepticalrabbit@gmail.com" },
   { name = "fusmatrs", email = "rory.spencer@ukaea.uk"},
@@ -13,11 +13,6 @@ authors = [
 ]
 license = { file = "LICENSE" }
 readme = "README.md"
-classifiers = [
-    "Programming Language :: Python :: 3",
-    "License :: GNU LGPL",
-    "Operating System :: OS Independent",
-]
 requires-python = ">=3.11"
 dependencies = [
   "numpy<2.0.0",
@@ -25,8 +20,8 @@ dependencies = [
 ]
 
 [project.urls]
-"Repository" = "https://github.com/Applied-Materials-Technology/mooseherder"
-"Issue Tracker" = "https://github.com/Applied-Materials-Technology/mooseherder/issues"
+"Repository" = "https://github.com/Computer-Aided-Validation-Laboratory/mooseherder"
+"Issue Tracker" = "https://github.com/Computer-Aided-Validation-Laboratory/mooseherder/issues"
 
 [tool.setuptools.packages.find]
 where = ["src"]
