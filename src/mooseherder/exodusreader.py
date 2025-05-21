@@ -1,21 +1,20 @@
-"""
-===============================================================================
-EXODUS READER
-Used to read output *.e from MOOSE simulations.
+# ===============================================================================
+# EXODUS READER
+# Used to read output *.e from MOOSE simulations.
 
-There are several different cases that lead to different MOOSE output formats.
+# There are several different cases that lead to different MOOSE output formats.
 
-1) Outputs can have 2 or 3 spatial dimensions for nodal DOFs
-    (e.g. disp_x, disp_y and possibly disp_z)
-2) Element output may or may not be present (e.g. stress/strain)
-    2.1) Element outputs might appear as nodal variables if
-         material_output_order = FIRST or greater
-    2.2) Element output is split by block if material_output_order = CONSTANT
-4) Sub-domains may or may not be present but see 2.1 above for exception
+# 1) Outputs can have 2 or 3 spatial dimensions for nodal DOFs
+#     (e.g. disp_x, disp_y and possibly disp_z)
+# 2) Element output may or may not be present (e.g. stress/strain)
+#     2.1) Element outputs might appear as nodal variables if
+#          material_output_order = FIRST or greater
+#     2.2) Element output is split by block if material_output_order = CONSTANT
+# 4) Sub-domains may or may not be present but see 2.1 above for exception
 
-Authors: Lloyd Fletcher, Rory Spencer
-===============================================================================
-"""
+# Authors: Lloyd Fletcher, Rory Spencer
+# ===============================================================================
+
 from pathlib import Path
 import netCDF4 as nc
 import numpy as np
@@ -29,6 +28,13 @@ class ExodusReader(OutputReader):
     a SimData object with the required data. Most used cases are covered with
     by creating an ExodusReader and then calling either read_sim_data() or
     read_all_sim_data() specified at the bottom of the class.
+
+    Parameters
+    ----------
+
+    Returns
+    -------
+
     """
     def __init__(self, output_file: Path) -> None:
         """__init__: Construct class by reading the exodus file using the
@@ -52,14 +58,20 @@ class ExodusReader(OutputReader):
         """get_names: Extract a list of variable names from the dataset. Useful
         for getting node/element/sideset/global variables names.
 
-        Args:
-            key (str | None): string key used to extract a list of names from
-                the dataset e.g. 'node_var_names'. If key is None returns None.
+        Parameters
+        ----------
+        key : str | None
+            string key used to extract a list of names from
+            the dataset e.g. 'node_var_names'. If key is None returns None.
 
-        Returns:
-            np.ndarray | None: numpy array of strings representing the names
-                that correspond to the variables in the dataset. Returns None
-                if the specified key does not exist in the dataset.
+
+        Returns
+        -------
+        np.ndarray | None
+            numpy array of strings representing the names
+            that correspond to the variables in the dataset. Returns None
+            if the specified key does not exist in the dataset.
+
         """
         if key not in self._data.variables or key is None:
             return None
@@ -71,12 +83,21 @@ class ExodusReader(OutputReader):
                 ) -> np.ndarray:
         """get_var: Extract a numeric variable from the dataset.
 
-        Args:
-            key (str): key corresponding to the variable in the dataset. e.g.
-                'time_whole'
+        Parameters
+        ----------
+        key : str
+            key corresponding to the variable in the dataset. e.g.
+            'time_whole'
+        key: str :
 
-        Returns:
-            np.ndarray: numpy numeric array containing the variable data.
+        time_inds: np.ndarray | None :
+             (Default value = None)
+
+        Returns
+        -------
+        np.ndarray
+            numpy numeric array containing the variable data.
+
         """
         if key not in self._data.variables:
             return np.array([])
@@ -96,15 +117,28 @@ class ExodusReader(OutputReader):
         """get_key: builds the key required to extract a given variable from
         the exodus dataset.
 
-        Args:
-            all_names (np.ndarray): all possible name keys extracted using the
-                get names function.
-            name (str): the specific name key that the user wants to extract
-            key_tag (str): the string tag that is prepended to get the variable
-                from the dataset.
+        Parameters
+        ----------
+        all_names : np.ndarray
+            all possible name keys extracted using the
+            get names function.
+        name : str
+            the specific name key that the user wants to extract
+        key_tag : str
+            the string tag that is prepended to get the variable
+            from the dataset.
+        name: str :
 
-        Returns:
-            str | None: the string key in the dataset to get the variable
+        all_names: np.ndarray :
+
+        key_tag: str :
+
+
+        Returns
+        -------
+        str | None
+            the string key in the dataset to get the variable
+
         """
         inds = np.where(all_names == name)[0]
         if inds.shape[0] == 0:
@@ -118,10 +152,16 @@ class ExodusReader(OutputReader):
         """get_connectivity_names: gets the connectivity names in the exodus
         dataset. These are of the form 'connect1', 'connect2' etc.
 
-        Returns:
-            np.ndarray: array of element connectivity keys as strings of the
-                form connectX where X is an integer of 1 or greater e.g.
-                connect1.
+        Parameters
+        ----------
+
+        Returns
+        -------
+        np.ndarray
+            array of element connectivity keys as strings of the
+            form connectX where X is an integer of 1 or greater e.g.
+            connect1.
+
         """
         names = np.array([])
         for bb in range(self.get_num_elem_blocks()):
@@ -136,13 +176,19 @@ class ExodusReader(OutputReader):
         """get_connectivity: returns the connectivity table as a dictionary
         keyed with the name 'connectX' and the table itseld as numpy array.
 
-        Returns:
-            dict[str,np.ndarray]: dictionary containing the element
-                connectivity tables based on keys related to the subdomain e.g.
-                key 'connect1' returns the element connectivity table for
-                subdomain 1. The table has dimensions N by n_e where N is the
-                total number of nodes in the subdomain and n_e is the number
-                of nodes per element.
+        Parameters
+        ----------
+
+        Returns
+        -------
+        dict[str,np.ndarray]
+            dictionary containing the element
+            connectivity tables based on keys related to the subdomain e.g.
+            key 'connect1' returns the element connectivity table for
+            subdomain 1. The table has dimensions N by n_e where N is the
+            total number of nodes in the subdomain and n_e is the number
+            of nodes per element.
+
         """
         connect = dict({})
         for key in self.get_connectivity_names():
@@ -155,10 +201,16 @@ class ExodusReader(OutputReader):
         """get_sideset_names: returns the sideset names as a numpy array of
         strings.
 
-        Returns:
-            np.ndarray | None: numpy array of strings corresponding to the
-                sideset names specified in the simulation. Returns None if no
-                sideset names are found.
+        Parameters
+        ----------
+
+        Returns
+        -------
+        np.ndarray | None
+            numpy array of strings corresponding to the
+            sideset names specified in the simulation. Returns None if no
+            sideset names are found.
+
         """
         return self.get_names('ss_names')
 
@@ -169,15 +221,20 @@ class ExodusReader(OutputReader):
         of ('sideset_name', 'node' | 'elem'). Gives either the list of node
         numbers or element numbers based on the specified key.
 
-        Args:
-            names (np.ndarray | None): numpy array of strings specifying the
-                sideset names to extract from the dataset. If None return None.
+        Parameters
+        ----------
+        names : np.ndarray | None
+            numpy array of strings specifying the
+            sideset names to extract from the dataset. If None return None.:
 
-        Returns:
-            dict[tuple[str,str], np.ndarray] | None: dictionary of sideset
-                nodes and element sets by name. The key is a tuple with the
-                first string being the sideset name and the second being either
-                'node' or 'elem'. Returns None if no sidesets found.
+        Returns
+        -------
+        dict[tuple[str,str], np.ndarray] | None
+            dictionary of sideset
+            nodes and element sets by name. The key is a tuple with the
+            first string being the sideset name and the second being either
+            'node' or 'elem'. Returns None if no sidesets found.
+
         """
         all_names = self.get_sideset_names()
 
@@ -210,11 +267,17 @@ class ExodusReader(OutputReader):
         of ('sideset_name', 'node' | 'elem'). Gives either the list of node
         numbers or element numbers based on the specified key.
 
-        Returns:
-            dict[tuple[str,str], np.ndarray] | None: dictionary of sideset
-                nodes and element sets by name. The key is a tuple with the
-                first string being the sideset name and the second being either
-                'node' or 'elem'. Returns None if no sidesets found.
+        Parameters
+        ----------
+
+        Returns
+        -------
+        dict[tuple[str,str], np.ndarray] | None
+            dictionary of sideset
+            nodes and element sets by name. The key is a tuple with the
+            first string being the sideset name and the second being either
+            'node' or 'elem'. Returns None if no sidesets found.
+
         """
 
         return self.get_sidesets(self.get_sideset_names())
@@ -224,9 +287,15 @@ class ExodusReader(OutputReader):
         """get_node_var_names: gets the nodal variable names as a numpy array
         of strings e.g. np.array(['disp_x','disp_y'])
 
-        Returns:
-            np.ndarray | None: numpy array of strings containing the nodal
-                variable names. Returns None if no nodal variables are found.
+        Parameters
+        ----------
+
+        Returns
+        -------
+        np.ndarray | None
+            numpy array of strings containing the nodal
+            variable names. Returns None if no nodal variables are found.
+
         """
         return self.get_names('name_nod_var')
 
@@ -240,15 +309,22 @@ class ExodusReader(OutputReader):
         given as a numpy array of dimensions NxT where N is the number of nodes
         and T is the number of time steps in the simulation.
 
-        Args:
-            names (np.ndarray | None): numpy array of strings that are the
-                variables to be extracted from the exodus dataset.
+        Parameters
+        ----------
+        names : np.ndarray | None
+            numpy array of strings that are the
+            variables to be extracted from the exodus dataset.
+        time_inds: np.ndarray | None :
+             (Default value = None)
 
-        Returns:
-            dict[str,np.ndarray] | None: dictionary of requested nodal
-                variables. Keys are nodal variable names e.g. 'disp_x' and the
-                variable data is given as a numpy array. returns None if no
-                nodal variables are found.
+        Returns
+        -------
+        dict[str,np.ndarray] | None
+            dictionary of requested nodal
+            variables. Keys are nodal variable names e.g. 'disp_x' and the
+            variable data is given as a numpy array. returns None if no
+            nodal variables are found.
+
         """
         if names is None:
             return None
@@ -272,11 +348,17 @@ class ExodusReader(OutputReader):
         given as a numpy array of dimensions NxT where N is the number of nodes
         and T is the number of time steps in the simulation.
 
-        Returns:
-            dict[str, np.ndarray] | None: dictionary of requested nodal
-                variables. Keys are nodal variable names e.g. 'disp_x' and the
-                variable data is given as a numpy array. returns None if no
-                nodal variables are found.
+        Parameters
+        ----------
+
+        Returns
+        -------
+        dict[str, np.ndarray] | None
+            dictionary of requested nodal
+            variables. Keys are nodal variable names e.g. 'disp_x' and the
+            variable data is given as a numpy array. returns None if no
+            nodal variables are found.
+
         """
         return self.get_node_vars(self.get_node_var_names())
 
@@ -286,10 +368,16 @@ class ExodusReader(OutputReader):
         of strings if they exist. Note that there are several cases where the
         element variables may be interpolated to nodes and stored as nodal data
 
-        Returns:
-            np.ndarray | None: element variable names as a numpy array of
-                strings. An example variable name is 'strain_xx'. Returns None
-                if no element variable names exist in the dataset.
+        Parameters
+        ----------
+
+        Returns
+        -------
+        np.ndarray | None
+            element variable names as a numpy array of
+            strings. An example variable name is 'strain_xx'. Returns None
+            if no element variable names exist in the dataset.
+
         """
         return self.get_names('name_elem_var')
 
@@ -299,8 +387,14 @@ class ExodusReader(OutputReader):
         sub-domains) in the simulation. These are used to partition the element
         data.
 
-        Returns:
-            int: number of element blocks/sub-domains in the simulation.
+        Parameters
+        ----------
+
+        Returns
+        -------
+        int
+            number of element blocks/sub-domains in the simulation.
+
         """
         return self.get_names('eb_names').shape[0] # type: ignore
 
@@ -310,10 +404,16 @@ class ExodusReader(OutputReader):
         combinations of element variables names and block numbers present in
         the dataset.
 
-        Returns:
-            list[tuple[str,int]] | None: list of tuples containing the element
-                variable names and block numbers. Returns None if there are no
-                element variable name or element blocks.
+        Parameters
+        ----------
+
+        Returns
+        -------
+        list[tuple[str,int]] | None
+            list of tuples containing the element
+            variable names and block numbers. Returns None if there are no
+            element variable name or element blocks.
+
         """
         if self.get_elem_var_names() is None or self.get_num_elem_blocks() is None:
             return None
@@ -338,15 +438,20 @@ class ExodusReader(OutputReader):
         array with dimensions E_bxT where E_b is the number of element in the
         block and T is the number of time steps.
 
-        Args:
-            names_blocks (list[tuple[str,int]] | None): list of tuples
-                containing the combination of element variables names and
-                blocks to be extracted from the dataset.
+        Parameters
+        ----------
+        names_blocks : list[tuple[str,int]] | None :
+            list of tuples containing the combination of element variables names
+            and blocks to be extracted from the dataset.
+        time_inds: np.ndarray | None :
+             (Default value = None)
 
-        Returns:
-            dict[tuple[str,int],np.ndarray] | None: contains the variables
-                requested keyed using the input names_blocks with the data
-                given as a numpy array.
+        Returns
+        -------
+        dict[tuple[str,int],np.ndarray] | None
+            contains the variables requested keyed using the input names_blocks
+            with the data given as a numpy array.
+
         """
         all_names = self.get_elem_var_names()
 
@@ -370,11 +475,14 @@ class ExodusReader(OutputReader):
         array with dimensions E_bxT where E_b is the number of element in the
         block and T is the number of time steps.
 
+        Parameters
+        ----------
 
-        Returns:
-            dict[tuple[str,int], np.ndarray] | None: contains the variables
-                requested keyed using the input names_blocks with the data
-                given as a numpy array.
+        Returns
+        -------
+        dict[tuple[str,int], np.ndarray] | None
+            contains the variables requested keyed using the input names_blocks
+            with the data given as a numpy array.
         """
 
         return self.get_elem_vars(self.get_elem_var_names_and_blocks())
@@ -385,9 +493,15 @@ class ExodusReader(OutputReader):
         dataset. Global variables include the output of all MOOSE post-
         processors.
 
-        Returns:
-            np.ndarray | None: numpy array containing the global variable
-                names as strings.
+        Parameters
+        ----------
+
+        Returns
+        -------
+        np.ndarray | None
+            numpy array containing the global variable
+            names as strings.
+
         """
         return self.get_names('name_glo_var')
 
@@ -401,14 +515,21 @@ class ExodusReader(OutputReader):
         is given as a numpy array of T dimensions where T is the number of time
         steps.
 
-        Args:
-            names (np.ndarray | None): numpy array of strings specifying the
-                global variable names to extract from the dataset. If this is
-                None then return None.
+        Parameters
+        ----------
+        names : np.ndarray | None
+            numpy array of strings specifying the
+            global variable names to extract from the dataset. If this is
+            None then return None.
+        time_inds: np.ndarray | None :
+             (Default value = None)
 
-        Returns:
-            dict[str, np.ndarray] | None: dictionary keyed with the global
-                variable names requested giving the data as a numpy array.
+        Returns
+        -------
+        dict[str, np.ndarray] | None
+            dictionary keyed with the global
+            variable names requested giving the data as a numpy array.
+
         """
         all_names = self.get_glob_var_names()
 
@@ -436,9 +557,15 @@ class ExodusReader(OutputReader):
         is given as a numpy array of T dimensions where T is the number of time
         steps.
 
-        Returns:
-            dict[str, np.ndarray] | None: dictionary keyed with all global
-                variable names giving the data as numpy arrays.
+        Parameters
+        ----------
+
+        Returns
+        -------
+        dict[str, np.ndarray] | None
+            dictionary keyed with all global
+            variable names giving the data as numpy arrays.
+
         """
         return self.get_glob_vars(self.get_glob_var_names())
 
@@ -447,13 +574,21 @@ class ExodusReader(OutputReader):
         """Gets the nodal coordinates in each spatial dimension setting any
         undefined dimensions to zeros.
 
-        Raises:
-            RuntimeError: no spatial dimensions found.
+        Parameters
+        ----------
 
-        Returns:
-            np.array: returns the nodal coordinates as an array with shape
-                (N,3) where N is the number of nodes and the three columns
-                are the (x,y,z) spatial dimensions.
+        Returns
+        -------
+        np.array
+            returns the nodal coordinates as an array with shape
+            (N,3) where N is the number of nodes and the three columns
+            are the (x,y,z) spatial dimensions.
+
+        Raises
+        ------
+        RuntimeError
+            no spatial dimensions found.
+
         """
         # If the problem is not 3D any of these could not exist
         x = self.get_var('coordx')
@@ -477,14 +612,20 @@ class ExodusReader(OutputReader):
         """Helper function to create an array of zeros to pad any spatial
         dimensions that are not defined for the simulation.
 
-        Args:
-            coord (np.array): the coordinate array.
-            dim (int): the size of the vector of zeros to create if coord is
-                empty.
+        Parameters
+        ----------
+        coord : np.array
+            the coordinate array.
+        dim : int
+            the size of the vector of zeros to create if coord is
+            empty.
 
-        Returns:
-            np.array: returns a vector of zeros with shape (dim,) if the
-                input array is empty, otherwise return the input coord array.
+        Returns
+        -------
+        np.array
+            returns a vector of zeros with shape (dim,) if the
+            input array is empty, otherwise return the input coord array.
+
         """
         if coord.shape[0] == 0:
             return np.zeros([dim,])
@@ -495,10 +636,18 @@ class ExodusReader(OutputReader):
     def get_time(self, time_inds: np.ndarray | None = None) -> np.ndarray:
         """Get a vector of simulation time steps.
 
-        Returns:
-            np.array: returns an array with shape (T,) where T is the number
-                of time steps and the values of the elements are the simulation
-                time and each time step.
+        Parameters
+        ----------
+        time_inds: np.ndarray | None :
+             (Default value = None)
+
+        Returns
+        -------
+        np.array
+            returns an array with shape (T,) where T is the number
+            of time steps and the values of the elements are the simulation
+            time and each time step.
+
         """
         time_steps = np.array([]
                               )
@@ -512,8 +661,7 @@ class ExodusReader(OutputReader):
 
 
     def print_vars(self) -> None:
-        """Prints all variable strings in the exodus file to console.
-        """
+        """Prints all variable strings in the exodus file to console."""
         for vv in self._data.variables:
             print(vv)
 
@@ -523,9 +671,15 @@ class ExodusReader(OutputReader):
         a mostly populated SimReadConfig and removing variables that are
         unwanted.
 
-        Returns:
-            SimReadConfig: data class containing names of variables to be
-                extracted from the exodus dataset. See mooseherder.simdata.
+        Parameters
+        ----------
+
+        Returns
+        -------
+        SimReadConfig
+            data class containing names of variables to be
+            extracted from the exodus dataset. See mooseherder.simdata.
+
         """
         read_config = SimReadConfig()
 
@@ -542,12 +696,19 @@ class ExodusReader(OutputReader):
         """read_sim_data: reads the simulation data based on the specified
         SimReadConfig object.
 
-        Args:
-            read_config (SimReadConfig): data class containing the names of
-                the variables that are to be extracted from the exodus dataset.
+        Parameters
+        ----------
+        read_config : SimReadConfig
+            data class containing the names of
+            the variables that are to be extracted from the exodus dataset.
+        read_config: SimReadConfig :
 
-        Returns:
-            SimData: data class containing data from the simulation.
+
+        Returns
+        -------
+        SimData
+            data class containing data from the simulation.
+
         """
         data = SimData()
 
@@ -573,8 +734,14 @@ class ExodusReader(OutputReader):
     def read_all_sim_data(self) -> SimData:
         """read_all_sim_data: gets all simulation data from the exodus dataset.
 
-        Returns:
-            SimData: data class containing the data from the simulation.
+        Parameters
+        ----------
+
+        Returns
+        -------
+        SimData
+            data class containing the data from the simulation.
+
         """
         data = SimData()
 

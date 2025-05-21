@@ -14,6 +14,13 @@ class GmshRunner(SimRunner):
     """Used to call gmsh to create a mesh file to be used to run a finite
     element simulation. Implements the SimRunner abstract interface so that it
     can be used by the herd.
+
+    Parameters
+    ----------
+
+    Returns
+    -------
+
     """
     def __init__(self, gmsh_app: Path | None = None):
         """Create a gmsh runner with path to the gmsh app.
@@ -32,11 +39,19 @@ class GmshRunner(SimRunner):
     def set_gmsh_app(self, gmsh_app: Path) -> None: # type: ignore
         """Sets path to the gmsh app.
 
-        Args:
-            gmsh_app (str): full path to the gmsh app.
+        Parameters
+        ----------
+        gmsh_app : Path
+            full path to the gmsh app.
 
-        Raises:
-            FileNotFoundError: gmsh app does not exist at the specified path.
+        Returns
+        -------
+
+        Raises
+        ------
+        FileNotFoundError
+            gmsh app does not exist at the specified path.
+
         """
         if not gmsh_app.exists():
             raise FileNotFoundError('Gmsh app not found at given path.')
@@ -47,8 +62,14 @@ class GmshRunner(SimRunner):
     def get_input_file(self) -> Path | None:
         """get_input_path: the path to the input file to run gmsh with.
 
-        Returns:
-            Path | None: path to the gmsh *.geo file.
+        Parameters
+        ----------
+
+        Returns
+        -------
+        Path | None
+            path to the gmsh *.geo file.
+
         """
         return self._input_path
 
@@ -56,12 +77,21 @@ class GmshRunner(SimRunner):
     def set_input_file(self, input_path: Path) -> None:
         """Sets the input geo file for gmsh.
 
-        Args:
-            input_file (str): Full path
+        Parameters
+        ----------
+        input_file : Path
+            Full path to the gmsh *.geo input file.
 
-        Raises:
-            FileNotFoundError: Not a .geo file
-            FileNotFoundError: Geo file does not exist
+        Returns
+        -------
+
+        Raises
+        ------
+        FileNotFoundError
+            Not a .geo file
+        FileNotFoundError
+            Geo file does not exist
+
         """
         if input_path.suffix != '.geo':
             raise FileNotFoundError('Incorrect file type. Must be *.geo.')
@@ -75,16 +105,27 @@ class GmshRunner(SimRunner):
     def run(self, input_file: Path | None = None, parse_only: bool = True) -> None:
         """Run the geo file to create the mesh.
 
-        Args:
-            input_file (str, optional): Path to the .geo file containing the input.
-                Can also be preset using set_input_file. Defaults to "" and ises
-                the input file specified using set_input_file.
+        Parameters
+        ----------
+        input_file : Path | None
+            Path to the .geo file containing the input.
+            Can also be preset using set_input_file. Defaults to "" and ises
+            the input file specified using set_input_file.
+        parse_only: bool :
+             (Default value = True)
 
-        Raises:
-            RuntimeError: the path to the gmsh app is empty and must be
-                specified first.
-            RuntimeError: the input file string is empty and must be specified
-                first.
+        Returns
+        -------
+
+        Raises
+        ------
+        RuntimeError
+            the path to the gmsh app is empty and must be
+            specified first.
+        RuntimeError
+            the input file string is empty and must be specified
+            first.
+
         """
         if input_file is not None:
             self.set_input_file(input_file)
@@ -113,8 +154,14 @@ class GmshRunner(SimRunner):
         to be read after the simulation has run. This information is stored in
         the exodus.
 
-        Returns:
-            Path | None: Default returns None.
+        Parameters
+        ----------
+
+        Returns
+        -------
+        Path | None
+            Default returns None.
+
         """
         return None
 

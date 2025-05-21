@@ -1,5 +1,4 @@
-'''
-===============================================================================
+'''===============================================================================
 Directory Manager Class
 
 Authors: Lloyd Fletcher
@@ -12,8 +11,15 @@ import json
 from pathlib import Path
 
 class DirectoryManager:
-    """ Manages directories for running simulations in parallel with the
-    mooseherd.
+    """Manages directories for running simulations in parallel with the
+        mooseherd.
+
+    Parameters
+    ----------
+
+    Returns
+    -------
+
     """
     def __init__(self, n_dirs: int = 1) -> None:
         """__init__
@@ -37,8 +43,14 @@ class DirectoryManager:
         at the start of the path and then creates numbered sub-directory paths
         based on the sub directory name and number of directories specified.
 
-        Returns:
-            list[Path]:
+        Parameters
+        ----------
+
+        Returns
+        -------
+        list[Path]
+
+
         """
         run_dirs = list([])
         for nn in range(self._n_dirs): # type: ignore
@@ -52,9 +64,17 @@ class DirectoryManager:
         created sub-directores. default on creation is 'sim-workdir'. Populates
         the list of run directories using the new sub directory name.
 
-        Args:
-            sub_dir_name (str): string to be used to name the created
-                sub-directories within the base directory.
+        Parameters
+        ----------
+        sub_dir_name : str
+            string to be used to name the created
+            sub-directories within the base directory.
+        sub_dir_name: str :
+
+
+        Returns
+        -------
+
         """
         self._sub_dir = sub_dir_name
         self._run_dirs = self._set_run_dirs()
@@ -64,15 +84,24 @@ class DirectoryManager:
         """set_base_dir: sets the base directory to create sub-directors for
         running the simulations. The base directory must exist.
 
-        Args:
-            base_dir (Path): directory in which the new working directories will
-                be created.
-            clear_old_dirs (bool, optional): deletes previous directories in
-                the base directory and their contents if they exist. Defaults
-                to False.
+        Parameters
+        ----------
+        base_dir : Path
+            directory in which the new working directories will
+            be created.
+        clear_old_dirs : bool
+            deletes previous directories in
+            the base directory and their contents if they exist. Defaults
+            to False.
 
-        Raises:
-            FileExistsError: the selected base directory does no exist.
+        Returns
+        -------
+
+        Raises
+        ------
+        FileExistsError
+            the selected base directory does no exist.
+
         """
         if not base_dir.is_dir():
             raise FileExistsError("Specified base directory does not exist.")
@@ -89,8 +118,14 @@ class DirectoryManager:
         key files that map the simulation outputs to the various directories
         that are being managed.
 
-        Returns:
-            str: common string used to name the output key json files.
+        Parameters
+        ----------
+
+        Returns
+        -------
+        str
+            common string used to name the output key json files.
+
         """
         return self._output_key_tag
 
@@ -100,8 +135,14 @@ class DirectoryManager:
         variable json file that contains a copy of the dictionary the user
         provided as part of the parameter sweep.
 
-        Returns:
-            str: common string used to name the sweep variable json files.
+        Parameters
+        ----------
+
+        Returns
+        -------
+        str
+            common string used to name the sweep variable json files.
+
         """
         return self._sweep_var_tag
 
@@ -110,8 +151,14 @@ class DirectoryManager:
         """create_dirs: Creates the specified number of directories based on
         the sub_dir name within the base directory.
 
-        Returns:
-            list[Path]: list of paths to the directories to create.
+        Parameters
+        ----------
+
+        Returns
+        -------
+        list[Path]
+            list of paths to the directories to create.
+
         """
         for rr in self._run_dirs:
             if not rr.is_dir():
@@ -123,6 +170,13 @@ class DirectoryManager:
     def clear_dirs(self) -> None:
         """clear_dirs: deletes all working directories in the base directory
         that have the corresponding sub-directory name and their contents.
+
+        Parameters
+        ----------
+
+        Returns
+        -------
+
         """
         all_dirs = os.listdir(self._base_dir)
         for dd in all_dirs:
@@ -135,8 +189,14 @@ class DirectoryManager:
         """get_all_run_dirs: returns the list of paths to all the directories
         that can be used to run simulations.
 
-        Returns:
-            list[Path]: paths to all created directories.
+        Parameters
+        ----------
+
+        Returns
+        -------
+        list[Path]
+            paths to all created directories.
+
         """
         return self._run_dirs
 
@@ -148,13 +208,19 @@ class DirectoryManager:
         directory number will wrap and point at an existing run directory
         allowing multiple simulations to be run in the same directory.
 
-        Args:
-            dir_num (int): number of the directory path to be retrieved. Can be
-                greater than the specified number of directories and will wrap
-                appropriately
+        Parameters
+        ----------
+        dir_num : int
+            number of the directory path to be retrieved. Can be
+            greater than the specified number of directories and will wrap
+            appropriately
 
-        Returns:
-            Path: path to the directory
+
+        Returns
+        -------
+        Path
+            path to the directory
+
         """
         if dir_num < 0:
             dir_num = 0
@@ -168,10 +234,17 @@ class DirectoryManager:
         """set_output_paths: sets the list of lists to the simulation output
         based on herder input.
 
-        Args:
-            output_paths (list[list[Path]]): paths to all outputs from the
-                variable sweep. Outer list is the variable combination run
-                inner list is based on the order the simulations were called.
+        Parameters
+        ----------
+        output_paths : list[list[Path | None]]
+            paths to all outputs from the
+            variable sweep. Outer list is the variable combination run
+            inner list is based on the order the simulations were called.
+
+
+        Returns
+        -------
+
         """
         self._output_paths = output_paths
 
@@ -180,10 +253,16 @@ class DirectoryManager:
         """get_output_paths: returns the list of lists to the simulation output
         files.
 
-        Returns:
-            list[list[Path]]: paths to all outputs from the variable sweep.
-                Outer list is the variable combination run inner list is based
-                on the order the simulations were called.
+        Parameters
+        ----------
+
+        Returns
+        -------
+        list[list[Path | None]]
+            paths to all outputs from the variable sweep.
+            Outer list is the variable combination run inner list is based
+            on the order the simulations were called.
+
         """
         return self._output_paths
 
@@ -193,13 +272,18 @@ class DirectoryManager:
         during the variable sweep mapping directories to given combinations
         of variables that were run.
 
-        Args:
-            sweep_iter (int): number corresponding to the sweep iteration to
-                retrieve. Defaults to 1.
+        Parameters
+        ----------
+        sweep_iter : int
+            number corresponding to the sweep iteration to
+            retrieve. Defaults to 1.
 
-        Returns:
-            Path: path to the output key file that maps output paths to the
-                combinations of variables in the sweep.
+        Returns
+        -------
+        Path
+            path to the output key file that maps output paths to the
+            combinations of variables in the sweep.
+
         """
         return self._run_dirs[0] / f'{self._output_key_tag}-{sweep_iter:d}.json'
 
@@ -208,10 +292,16 @@ class DirectoryManager:
         """write_output_key: converts the output paths to strings and saves
         them in json format.
 
-        Args:
-            sweep_iter (int): number corresponing to the sweep iteration to
-                write. The sweep iteration is used to number the output key
-                files.
+        Parameters
+        ----------
+        sweep_iter : int
+            number corresponing to the sweep iteration to
+            write. The sweep iteration is used to number the output key
+            files.
+
+        Returns
+        -------
+
         """
         str_output = output_paths_to_str(self._output_paths)
 
@@ -223,12 +313,17 @@ class DirectoryManager:
         """get_sweep_var_file: path to the json file which contains the
         dictionary of variables that were analysed at the given sweep iteration
 
-        Args:
-            sweep_iter (int, optional): Sweep iteration (call number to herd
-                run_para). Defaults to 1.
+        Parameters
+        ----------
+        sweep_iter : int
+            Sweep iteration (call number to herd
+            run_para). Defaults to 1.
 
-        Returns:
-            Path: path to the json sweep variable file.
+        Returns
+        -------
+        Path
+            path to the json sweep variable file.
+
         """
         return self._run_dirs[0] / f'{self._sweep_var_tag}-{sweep_iter:d}.json'
 
@@ -239,11 +334,17 @@ class DirectoryManager:
         """write_sweep_vars: writes the sweep variable dictionary to a json
         file to log the variables used for each simulation.
 
-        Args:
-            sweep_vars (list[list[dict[str, Any]]]): sweep variables as passed
-                to the herd to run.
-            sweep_iter (int, optional): iteration number for number of calls to the
-                herd. Defaults to 1.
+        Parameters
+        ----------
+        sweep_vars : list[list[dict | None]]
+            sweep variables as passed to the herd to run.
+        sweep_iter : int
+            iteration number for number of calls to the
+            herd. Defaults to 1.
+
+        Returns
+        -------
+
         """
         with open(self.get_sweep_var_file(sweep_iter), "w", encoding='utf-8') as okf:
             json.dump(sweep_vars, okf, indent=4)
@@ -255,11 +356,16 @@ def output_paths_to_str(output_files: list[list[Path | None]]
     """output_paths_to_str: helper function for converting the output paths
     to strings to allow them to be saved as json.
 
-    Args:
-        output_files (list[list[Path]]):
+    Parameters
+    ----------
+    output_files : list[list[Path | None]]
 
-    Returns:
-        list[list[str]]: as input with Path converted to str
+
+    Returns
+    -------
+    list[list[str]]
+        as input with Path converted to str
+
     """
     str_output = list([])
     for sim_iter in output_files:
@@ -280,12 +386,16 @@ def output_str_to_paths(output_files: list[list[str | None]]
     """output_str_to_paths: helper function to convert strings read from output
     key json to paths.
 
-    Args:
-        output_files (list[list[str]]): output file list of path strings as in
-            the output key file.
+    Parameters
+    ----------
+    output_files : list[list[str]]
+        output file list of path strings as in the output key file.
 
-    Returns:
-        list[list[Path]]: as input with str converted to Path.
+    Returns
+    -------
+    list[list[Path]]
+        as input with str converted to Path.
+
     """
     str_output = list([])
 

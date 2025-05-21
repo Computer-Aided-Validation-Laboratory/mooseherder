@@ -9,15 +9,21 @@ from pathlib import Path
 
 
 class InputModifier:
-    """
-    Class to modify variables in generic text-based input files.
-
+    """Class to modify variables in generic text-based input files.
+    
     Once variables have been modified by the user by passing in a dictionary of
     new variables the input can be written to file.
-
+    
     Variable definition blocks should begin #comment character#* and end
     #comment character#**, e.g. //_* and //** for gmsh or #_* and #** for
     moose.
+
+    Parameters
+    ----------
+
+    Returns
+    -------
+
     """
 
     def __init__(
@@ -64,13 +70,20 @@ class InputModifier:
         """Helper function to split a string from the input file variable block
         into the variable key, the variable value and any remaining comment.
 
-        Args:
-            var_line (str): line from the input file to process
+        Parameters
+        ----------
+        var_line : str
+            line from the input file to process
+        var_line: str :
+            
 
-        Returns:
-            [str,str/float,str]: returns a three element list. The first element
-                is the variable key, the second is the variable value as a float
-                or string, the third is any comment string remaining.
+        Returns
+        -------
+        [str,str/float,str]
+            returns a three element list. The first element
+            is the variable key, the second is the variable value as a float
+            or string, the third is any comment string remaining.
+
         """
 
         extract_var = var_line.strip()
@@ -131,11 +144,19 @@ class InputModifier:
         """Updates the variable dictionary that will be written to the input
         file.
 
-        Args:
-            new_vars (dict): new variables to be written to the input file.
-                The keys must exist within the dictionary of variables
-                extracted from the input file. Only the variables to be edited
-                need to be present.
+        Parameters
+        ----------
+        new_vars : dict
+            new variables to be written to the input file.
+            The keys must exist within the dictionary of variables
+            extracted from the input file. Only the variables to be edited
+            need to be present.
+        new_vars: dict :
+            
+
+        Returns
+        -------
+
         """
         for kk in new_vars:
             if kk in self._vars:
@@ -150,8 +171,16 @@ class InputModifier:
     def write_file(self, input_write_file: Path) -> None:
         """Write the input file using the current variable dictionary.
 
-        Args:
-            input_write_file (str): Path to where the file should be written.
+        Parameters
+        ----------
+        input_write_file : str
+            Path to where the file should be written.
+        input_write_file: Path :
+            
+
+        Returns
+        -------
+
         """
         var_block = self._input_lines[self._var_start_ind + 1 : self._var_end_ind]
 
@@ -173,8 +202,14 @@ class InputModifier:
     def get_vars(self) -> dict:
         """Gets the variables found in the file.
 
-        Returns:
-            dict: keys are variable strings and values are variable values.
+        Parameters
+        ----------
+
+        Returns
+        -------
+        dict
+            keys are variable strings and values are variable values.
+
         """
         return self._vars
 
@@ -182,8 +217,14 @@ class InputModifier:
     def get_var_keys(self) -> list[str]:
         """Gets a list of variable names found in the input file.
 
-        Returns:
-            list[str]: list of variables name as strings
+        Parameters
+        ----------
+
+        Returns
+        -------
+        list[str]
+            list of variables name as strings
+
         """
         return list(self._vars.keys())
 
@@ -191,7 +232,13 @@ class InputModifier:
     def get_input_file(self) -> Path:
         """Gets the path and input file name.
 
-        Returns:
-            Path: path and input file name.
+        Parameters
+        ----------
+
+        Returns
+        -------
+        Path
+            path and input file name.
+
         """
         return self._input_file

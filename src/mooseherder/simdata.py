@@ -1,5 +1,4 @@
-"""
-===============================================================================
+"""===============================================================================
 SimData Class
 
 Authors: Lloyd Fletcher
@@ -11,8 +10,7 @@ import numpy as np
 
 @dataclass
 class SimData:
-    """ Data class for finite element simulation output.
-    """
+    """Data class for finite element simulation output."""
     num_spat_dims: int = 3
     ''' Number of spatial dimensions in the simulation, required to determine
     element types given that all coords are padded to [x,y,z]. Allows for 2D and
@@ -78,9 +76,9 @@ class SimData:
 
 @dataclass
 class SimReadConfig:
-    """ Used to specify na mes of variables to be read into the SimData class.
-        This class allows the user to only extract the required variables by
-        name.
+    """Used to specify na mes of variables to be read into the SimData class.
+       This class allows the user to only extract the required variables by
+       name.
     """
     time: bool | None = True
     coords: bool | None = True
